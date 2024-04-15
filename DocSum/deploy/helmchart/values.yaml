@@ -1,0 +1,17 @@
+nodePort:
+    doc_sum: 30123
+    tgi_deploy: 30180
+    ui_deploy: 30176
+
+volume:
+    tgi_deploy: /mnt/model
+
+image:
+    doc_sum: intel/gen-ai-examples:document-summarize
+    tgi_deploy: ghcr.io/huggingface/text-generation-inference:1.4
+    ui_deploy: ccr-registry.caas.intel.com/cnbench/gen-ai-examples/ui:v1.0
+
+shm_size: "1g"
+model_id: "HuggingFaceH4/zephyr-7b-beta"
+disable_custom_kernels: ""    
+

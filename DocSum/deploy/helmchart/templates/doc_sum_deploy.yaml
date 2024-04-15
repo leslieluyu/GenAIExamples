@@ -25,8 +25,8 @@ spec:
         - name: HUGGINGFACEHUB_API_TOKEN
           value: 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
         - name: TGI_ENDPOINT
-          value: http://tgi-deploy.default.svc.cluster.local:8180
-        image: intel/gen-ai-examples:document-summarize
+          value: http://tgi-deploy.default.svc.cluster.local:8180  
+        image: {{ .Values.image.doc_sum }}
         name: doc-sum
         command: ["nohup","python","app/server.py","&"] 
         ports:
@@ -53,4 +53,4 @@ spec:
     - name: http-service
       port: 8080
       targetPort: 8000
-      nodePort: 30123  
+      nodePort: {{ .Values.nodePort.doc_sum_deploy }}        
