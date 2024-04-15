@@ -81,4 +81,12 @@ http://${nodeip}:30123
 
 
 ## Deploy Services by helm chart(Option 2)
+```
+# deploy
+helm pull harbor_caas_intel/doc-sum-deploy-chart
 
+helm install doc-sum-deploy doc-sum-deploy-chart-0.1.0.tgz 
+
+# verify
+# the same as kubernetes deploy
+```
