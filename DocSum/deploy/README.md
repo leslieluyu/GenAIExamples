@@ -1,18 +1,23 @@
 <h1 align="center" id="title">Deploy in Kubernetes Cluster</h1>
 
-## Build UI image(Optional)
+## Build UI image
 ```
 $ cd ${RepoPath}/DocSum/ui
 $ cp ../deploy/docker/Dockerfile.ui .
-$ docker build . -f Dockerfile.ui -t ccr-registry.caas.intel.com/cnbench/gen-ai-examples/ui:v1.0
+$ docker build . -f Dockerfile.ui -t ${docker_registry}/gen-ai-examples/ui:v1.0
 ```
 ## Prebuilt images
 You could also use prebuilt images
-TGI: ghcr.io/huggingface/text-generation-inference:1.4
-Doc_Summary: intel/gen-ai-examples:document-summarize
-UI: ccr-registry.caas.intel.com/cnbench/gen-ai-examples/ui:v1.0
+- TGI: ghcr.io/huggingface/text-generation-inference:1.4
+- Doc_Summary: intel/gen-ai-examples:document-summarize
+- UI: ${docker_registry}/gen-ai-examples/ui:v1.0
 
-## Deploy Services by yaml files(Option 1)
+## Deploy Services by Yaml files(Option 1)
+
+> [NOTE]  
+> Be sure to modify the image name in each yaml files by your own value
+> Be sure to modify the ${HUGGINGFACEHUB_API_TOKEN} in doc_sum_deploy.yaml
+
 
 ### 1. Deploy TGI Service
 ```
@@ -74,18 +79,18 @@ http://${nodeip}:30176
 2. Be sure you could access the doc summary service by nodeport from your local pc
 http://${nodeip}:30123
 
-```
-
-
-```
 
 
 ## Deploy Services by helm chart(Option 2)
+> [NOTE]  
+> 1. Be sure to modify the image name in each yaml files by your own value
+> 2. Be sure to modify the ${HUGGINGFACEHUB_API_TOKEN} in doc_sum_deploy.yaml
+
 ```
 # deploy
-helm pull harbor_caas_intel/doc-sum-deploy-chart
+$ cd ${RepoPath}/DocSum/deploy/
 
-helm install doc-sum-deploy doc-sum-deploy-chart-0.1.0.tgz 
+helm install doc-sum-deploy helmchart/
 
 # verify
 # the same as kubernetes deploy

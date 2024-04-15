@@ -22,7 +22,7 @@ spec:
           value: "http://localhost:30123/v1"
         - name: SVC_PORT
           value: "5176"
-        image: ccr-registry.caas.intel.com/cnbench/gen-ai-examples/ui:v1.0
+        image: ${docker_registry}/gen-ai-examples/ui:v1.0
         name: ui-deploy-demo
         command: ["npm","run","dev","--","--port","5176","--host"]
         ports:
