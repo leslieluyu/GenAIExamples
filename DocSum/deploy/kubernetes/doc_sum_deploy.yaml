@@ -17,11 +17,15 @@ spec:
         app: doc-sum
     spec:
       containers:
-        env:
-          - name: HUGGINGFACEHUB_API_TOKEN
-            value: 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
-        hostNetwork: true
-        hostIPC: true
+      - env:
+        - name: http_proxy
+          value: "http://proxy-dmz.intel.com:911"
+        - name: https_proxy
+          value: "http://proxy-dmz.intel.com:912"
+        - name: HUGGINGFACEHUB_API_TOKEN
+          value: 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
+        - name: TGI_ENDPOINT
+          value: tgi-deploy.default.svc.cluster.local:8180  
         image: intel/gen-ai-examples:document-summarize
         name: doc-sum
         command: ["nohup","python","app/server.py","&"] 
