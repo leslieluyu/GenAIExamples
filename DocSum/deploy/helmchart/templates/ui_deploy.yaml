@@ -18,6 +18,8 @@ spec:
     spec:
       containers:
       - env:
+        - name: BASIC_URL
+          value: "http://localhost:30123/v1"
         - name: SVC_PORT
           value: "5176"
         image: {{ .Values.image.ui_deploy }}

@@ -11,7 +11,7 @@ image:
     tgi_deploy: ghcr.io/huggingface/text-generation-inference:1.4
     ui_deploy: ccr-registry.caas.intel.com/cnbench/gen-ai-examples/ui:v1.0
 
-shm-size: "1g"
-model-id: "HuggingFaceH4/zephyr-7b-beta"
-disable-custom-kernels: ""    
+shm_size: "1g"
+model_id: "HuggingFaceH4/zephyr-7b-beta"
+disable_custom_kernels: ""    
 

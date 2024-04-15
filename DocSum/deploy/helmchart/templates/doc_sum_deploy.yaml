@@ -25,7 +25,7 @@ spec:
         - name: HUGGINGFACEHUB_API_TOKEN
           value: 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
         - name: TGI_ENDPOINT
-          value: tgi-deploy.default.svc.cluster.local:8180  
+          value: http://tgi-deploy.default.svc.cluster.local:8180  
         image: {{ .Values.image.doc_sum }}
         name: doc-sum
         command: ["nohup","python","app/server.py","&"] 

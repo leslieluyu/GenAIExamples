@@ -23,11 +23,11 @@ spec:
         - name: https_proxy
           value: "http://proxy-dmz.intel.com:912"
         - name: shm-size
-          value: {{ .Values.shm-size }}
+          value: {{ .Values.shm_size }}
         - name: model-id
-          value: {{ .Values.model-id }}
+          value: {{ .Values.model_id }}
         - name: disable-custom-kernels
-          value: {{ .Values.disable-custom-kernels }}
+          value: {{ .Values.disable_custom_kernels }}
         image: {{ .Values.image.tgi_deploy }}
         name: tgi-deploy-demo
         volumeMounts:
