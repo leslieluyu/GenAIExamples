@@ -1,5 +1,5 @@
 nodePort:
-    doc_sum: 30123
+    doc_sum_deploy: 30123
     tgi_deploy: 30180
     ui_deploy: 30176
 
