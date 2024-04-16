@@ -18,10 +18,6 @@ spec:
     spec:
       containers:
       - env:
-        - name: http_proxy
-          value: "http://proxy-dmz.intel.com:911"
-        - name: https_proxy
-          value: "http://proxy-dmz.intel.com:912"
         - name: shm-size
           value: {{ .Values.shm_size }}
         - name: model-id

@@ -18,12 +18,8 @@ spec:
     spec:
       containers:
       - env:
-        - name: http_proxy
-          value: "http://proxy-dmz.intel.com:911"
-        - name: https_proxy
-          value: "http://proxy-dmz.intel.com:912"
         - name: HUGGINGFACEHUB_API_TOKEN
-          value: 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
+          value: ${HUGGINGFACEHUB_API_TOKEN}
         - name: TGI_ENDPOINT
           value: http://tgi-deploy.default.svc.cluster.local:8180
         image: intel/gen-ai-examples:document-summarize
