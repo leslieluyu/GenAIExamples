@@ -1,0 +1,48 @@
+# QNA-RAG-Redis-Server Deployment  
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qna-rag-redis-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qna-rag-redis-server
+  template:
+    metadata:
+      labels:
+        app: qna-rag-redis-server
+    spec:
+      containers:
+      - name: qna-rag-redis-server
+        image: intel/gen-ai-examples:qna-rag-redis-server
+        env:
+        - name: http_proxy
+          value: "http://proxy-dmz.intel.com:911"
+        - name: https_proxy
+          value: "http://proxy-dmz.intel.com:912"
+        - name: HUGGINGFACEHUB_API_TOKEN
+          value: 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
+        - name: REDIS_PORT
+          value: "6379"
+        - name: EMBED_MODEL
+          value: BAAI/bge-base-en-v1.5
+        - name: REDIS_SCHEMA
+          value: schema_dim_768.yml
+        resources:
+          limits:
+            memlock: -1
+            memory: -1
+        volumeMounts:
+        - name: workspace
+          mountPath: /ws
+        - name: test
+          mountPath: /test
+        networkMode: host
+      volumes:
+      - name: workspace
+        hostPath:
+          path: /mnt/qna/redis
+      - name: test
+        hostPath:
+          path: /mnt/qna/test

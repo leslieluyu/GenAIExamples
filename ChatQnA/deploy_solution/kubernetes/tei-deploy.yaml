@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tei-deploy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tei-deploy
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: tei-deploy
+    spec:
+      containers:
+      - env:
+        - name: http_proxy
+          value: "http://proxy-dmz.intel.com:911"
+        - name: https_proxy
+          value: "http://proxy-dmz.intel.com:912"
+        image: ghcr.io/huggingface/text-generation-inference:1.4
+        name: tgi-deploy-demo
+        args:
+        - --revision
+        - "refs/pr/5"
+        - --model-id
+        - "BAAI/bge-large-en-v1.5"
+        volumeMounts:
+        - mountPath: /data
+          name: model-volume
+        ports:
+        - containerPort: 8180
+        resources:
+          limits:
+            cpu: 56000m
+            memory: 26Gi
+          requests:
+            cpu: 56000m
+            memory: 26Gi
+      serviceAccountName: default
+      volumes:
+      - name: model-volume
+        hostPath:
+          # directory location on host
+          path: /mnt/model
+          # this field is optional
+          type: Directory
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: tei-deploy
+spec:
+  type: NodePort
+  selector:
+    app: tei-deploy
+  ports:
+    - name: service
+      port: 9090
+      targetPort: 80
+      nodePort: 30190
