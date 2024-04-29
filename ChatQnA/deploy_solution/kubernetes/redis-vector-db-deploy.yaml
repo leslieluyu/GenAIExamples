@@ -27,10 +27,15 @@ kind: Service
 metadata:
   name: redis-vector-db
 spec:
+  type: NodePort
   selector:
     app: redis-vector-db
   ports:
-  - port: 6379
+  - name: redis-service
+    port: 6379
     targetPort: 6379
-  - port: 8001
+    nodePort: 31379
+  - name: redis-port2
+    port: 8001
     targetPort: 8001
+

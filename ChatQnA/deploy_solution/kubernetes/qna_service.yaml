@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: qna-rag-redis-server
+spec:
+  type: NodePort
+  selector:
+    app: qna-rag-redis-server
+  ports:
+    - name: service
+      port: 8000
+      targetPort: 8000

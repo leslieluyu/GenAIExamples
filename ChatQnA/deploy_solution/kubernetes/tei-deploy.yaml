@@ -22,8 +22,10 @@ spec:
           value: "http://proxy-dmz.intel.com:911"
         - name: https_proxy
           value: "http://proxy-dmz.intel.com:912"
-        image: ghcr.io/huggingface/text-generation-inference:1.4
-        name: tgi-deploy-demo
+        - name: HUGGINGFACEHUB_API_TOKEN
+          value: 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
+        image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.2
+        name: tei-deploy
         args:
         - --revision
         - "refs/pr/5"

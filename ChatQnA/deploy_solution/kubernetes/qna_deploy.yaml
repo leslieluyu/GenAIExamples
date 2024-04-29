@@ -21,25 +21,30 @@ spec:
           value: "http://proxy-dmz.intel.com:911"
         - name: https_proxy
           value: "http://proxy-dmz.intel.com:912"
+        - name: TGI_ENDPOINT
+          value: http://tgi-deploy.default.svc.cluster.local:8180
+        - name: TEI_ENDPOINT           
+          value: http://tei-deploy.default.svc.cluster.local:9090   
         - name: HUGGINGFACEHUB_API_TOKEN
           value: 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
+        - name: REDIS_HOST
+          value: "redis-vector-db.default.svc.cluster.local"
         - name: REDIS_PORT
           value: "6379"
         - name: EMBED_MODEL
           value: BAAI/bge-base-en-v1.5
         - name: REDIS_SCHEMA
           value: schema_dim_768.yml
-        command: ["nohup","python","app/server.py","&"] 
+        #command: ["nohup","python","app/server.py","&"] 
         resources:
-          limits:
-            memlock: -1
-            memory: -1
+          # limits:
+          #   memlock: 32978832
+          #   memory: 32978832
         volumeMounts:
         - name: workspace
           mountPath: /ws
         - name: test
           mountPath: /test
-        networkMode: host
       volumes:
       - name: workspace
         hostPath:
@@ -47,3 +52,16 @@ spec:
       - name: test
         hostPath:
           path: /mnt/qna/test
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: qna-rag-redis-server
+spec:
+  type: NodePort
+  selector:
+    app: qna-rag-redis-server
+  ports:
+    - name: service
+      port: 8000
+      targetPort: 8000
