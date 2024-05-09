@@ -1,0 +1,219 @@
+# Copyright (c) 2024 Intel Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+version: "3"
+services:
+  # TGI
+  gaudi0:
+    image: ghcr.io/huggingface/text-generation-inference:1.4
+    # runtime: habana
+    ports:
+      - "8081:80"
+    env_file:
+      - .env
+    environment:
+      - http_proxy=http://proxy-dmz.intel.com:911
+      - https_proxy=http://proxy-dmz.intel.com:912
+      - shm-size=1g
+      - disable-custom-kernels=
+    volumes:
+      - $volume:/data
+    cap_add:
+      - sys_nice
+    ipc: "host"
+    command: ["--model-id", "$model"]
+  # gaudi1:
+  #   image: ghcr.io/huggingface/text-generation-inference:1.4
+  #   # runtime: habana
+  #   ports:
+  #     - "8082:80"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - http_proxy=http://proxy-dmz.intel.com:911
+  #     - https_proxy=http://proxy-dmz.intel.com:912
+  #     - shm-size=1g
+  #     - disable-custom-kernels=
+  #   volumes:
+  #     - $volume:/data
+  #   cap_add:
+  #     - sys_nice
+  #   ipc: "host"
+  #   command: ["--model-id", "$model"]
+  # gaudi2:
+  #   image: ghcr.io/huggingface/text-generation-inference:1.4
+  #   # runtime: habana
+  #   ports:
+  #     - "8083:80"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - http_proxy=http://proxy-dmz.intel.com:911
+  #     - https_proxy=http://proxy-dmz.intel.com:912
+  #     - shm-size=1g
+  #     - disable-custom-kernels=
+  #   volumes:
+  #     - $volume:/data
+  #   cap_add:
+  #     - sys_nice
+  #   ipc: "host"
+  #   command: ["--model-id", "$model"]
+  # gaudi3:
+  #   image: ghcr.io/huggingface/text-generation-inference:1.4
+  #   # runtime: habana
+  #   ports:
+  #     - "8084:80"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - http_proxy=http://proxy-dmz.intel.com:911
+  #     - https_proxy=http://proxy-dmz.intel.com:912
+  #     - shm-size=1g
+  #     - disable-custom-kernels=
+  #   volumes:
+  #     - $volume:/data
+  #   cap_add:
+  #     - sys_nice
+  #   ipc: "host"
+  #   command: ["--model-id", "$model"]
+  # gaudi4:
+  #   image: ghcr.io/huggingface/text-generation-inference:1.4
+  #   # runtime: habana
+  #   ports:
+  #     - "8085:80"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - http_proxy=http://proxy-dmz.intel.com:911
+  #     - https_proxy=http://proxy-dmz.intel.com:912
+  #     - shm-size=1g
+  #     - disable-custom-kernels=
+  #   volumes:
+  #     - $volume:/data
+  #   cap_add:
+  #     - sys_nice
+  #   ipc: "host"
+  #   command: ["--model-id", "$model"]
+  # gaudi5:
+  #   image: ghcr.io/huggingface/text-generation-inference:1.4
+  #   # runtime: habana
+  #   ports:
+  #     - "8086:80"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - http_proxy=http://proxy-dmz.intel.com:911
+  #     - https_proxy=http://proxy-dmz.intel.com:912
+  #     - shm-size=1g
+  #     - disable-custom-kernels=
+  #   volumes:
+  #     - $volume:/data
+  #   cap_add:
+  #     - sys_nice
+  #   ipc: "host"
+  #   command: ["--model-id", "$model"]
+  # gaudi6:
+  #   image: ghcr.io/huggingface/text-generation-inference:1.4
+  #   # runtime: habana
+  #   ports:
+  #     - "8087:80"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - http_proxy=http://proxy-dmz.intel.com:911
+  #     - https_proxy=http://proxy-dmz.intel.com:912
+  #     - shm-size=1g
+  #     - disable-custom-kernels=
+  #   volumes:
+  #     - $volume:/data
+  #   cap_add:
+  #     - sys_nice
+  #   ipc: "host"
+  #   command: ["--model-id", "$model"]
+  # gaudi7:
+  #   image: ghcr.io/huggingface/text-generation-inference:1.4
+  #   # runtime: habana
+  #   ports:
+  #     - "8088:80"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - http_proxy=http://proxy-dmz.intel.com:911
+  #     - https_proxy=http://proxy-dmz.intel.com:912
+  #     - shm-size=1g
+  #     - disable-custom-kernels=
+  #   volumes:
+  #     - $volume:/data
+  #   cap_add:
+  #     - sys_nice
+  #   ipc: "host"
+  #   command: ["--model-id", "$model"]
+  # nginx:
+  #   build: ./nginx
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - gaudi0
+      # - gaudi1
+      # - gaudi2
+      # - gaudi3
+      # - gaudi4
+      # - gaudi5
+      # - gaudi6
+      # - gaudi7
+  # TEI    
+  text_embeddings_inference:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.2
+    ports:
+      - "9090:80"
+    environment:
+      - http_proxy=http://proxy-prc.intel.com:911
+      - https_proxy=http://proxy-prc.intel.com:912
+    volumes:
+      - /mnt/model:/data
+    command: --model-id BAAI/bge-large-en-v1.5 --revision refs/pr/5
+  # redis (vector db)  
+  redis-vector-db:
+    image: redis/redis-stack:7.2.0-v9
+    container_name: redis-vector-db
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+  # Server       
+  qna-rag-redis-server:
+    image: ccr-registry.caas.intel.com/cnbench/gen-ai-examples/qna-rag-redis-server:v1
+    container_name: qna-rag-redis-server
+    environment:
+      - https_proxy=http://proxy-prc.intel.com:912
+      - HUGGINGFACEHUB_API_TOKEN=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
+      - "REDIS_PORT=6379"
+      - "EMBED_MODEL=BAAI/bge-base-en-v1.5"
+      - "REDIS_SCHEMA=schema_dim_768.yml"
+    ulimits:
+      memlock:
+        soft: -1 # Set memlock to unlimited (no soft or hard limit)
+        hard: -1
+    volumes:
+      - ./redis:/ws
+      - ./test:/test
+    network_mode: "host"
+    # ports:
+    #   - "8000:8000"    
+  # UI  
+  ui:
+    image: ccr-registry.caas.intel.com/cnbench/gen-ai-examples/qna-ui:v1.0
+    ports:
+      - "7860:80"
+    restart: always
+
