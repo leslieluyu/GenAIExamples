@@ -16,34 +16,47 @@ spec:
       labels:
         app: tgi-deploy
     spec:
+      hostIPC: true
       containers:
       - env:
         - name: http_proxy
           value: "http://proxy-dmz.intel.com:911"
         - name: https_proxy
           value: "http://proxy-dmz.intel.com:912"
-        - name: shm-size
-          value: "1g"
-        - name: disable-custom-kernels
-          value: ""
+        - name: MAX_INPUT_LENGTH
+          value: "4096"
+        - name: MAX_TOTAL_TOKENS
+          value: "8196"
         image: ghcr.io/huggingface/text-generation-inference:1.4
         name: tgi-deploy-demo
+        securityContext:
+            capabilities:
+              add: ["SYS_NICE"]
         args:
         - --model-id
         - "HuggingFaceH4/zephyr-7b-beta"
+        #- "/data/Llama-2-7b-hf"
+        # - "/data/Mistral-7B-Instruct-v0.2"
+        # - --quantize
+        # - "bitsandbytes-fp4"
+#        - --disable-custom-kernels
         volumeMounts:
         - mountPath: /data
           name: model-volume
+        - mountPath: /dev/shm
+          name: shm
         ports:
         - containerPort: 8180
         resources:
-          limits:
-            cpu: 56000m
-            memory: 26Gi
-          requests:
-            cpu: 56000m
-            memory: 26Gi
+          # limits:
+          #   cpu: 56000m
+          #   memory: 26Gi
+          # requests:
+          #   cpu: 56000m
+          #   memory: 26Gi
       serviceAccountName: default
+      nodeSelector:
+        llmdemo: "true"
       volumes:
       - name: model-volume
         hostPath:
@@ -51,6 +64,10 @@ spec:
           path: /mnt/model
           # this field is optional
           type: Directory
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 1Gi
 ---
 kind: Service
 apiVersion: v1

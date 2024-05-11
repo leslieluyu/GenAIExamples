@@ -17,11 +17,13 @@ spec:
       - name: qna-rag-redis-server
         image: intel/gen-ai-examples:qna-rag-redis-server
         env:
+        - name: no_proxy
+          value: "no_proxy=localhost,127.0.0.1,intel.com,.intel.com,10.45.247.75,10.45.247.76,10.45.247.79,10.45.247.80,172.16.27.100,172.16.27.110,172.16.27.140,172.16.27.150,10.0.0.0/8,10.45.175.0/24,10.45.175.135,10.45.175.134,10.45.175.133,10.104.235.74,10.109.198.184,default.svc.cluster.local"
         - name: http_proxy
           value: "http://proxy-dmz.intel.com:911"
         - name: https_proxy
           value: "http://proxy-dmz.intel.com:912"
-        - name: TGI_ENDPOINT
+        - name: TGI_LLM_ENDPOINT
           value: http://tgi-deploy.default.svc.cluster.local:8180
         - name: TEI_ENDPOINT           
           value: http://tei-deploy.default.svc.cluster.local:9090   
@@ -45,6 +47,8 @@ spec:
           mountPath: /ws
         - name: test
           mountPath: /test
+      nodeSelector:
+        llmdemo: "true"
       volumes:
       - name: workspace
         hostPath:
