@@ -24,7 +24,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: qna-config
-        image: opea/chatqna:latest
+        image: opea/chatqna:0.1
         imagePullPolicy: IfNotPresent
         name: chaqna-xeon-backend-server-deploy
         args:
