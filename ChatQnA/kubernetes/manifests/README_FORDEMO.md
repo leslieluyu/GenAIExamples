@@ -1,6 +1,12 @@
-## How-To Deploy ChatQnA Demo
+# How-To Deploy ChatQnA Demo in Kubernetes
 
 ### INFO:
+> [NOTE]  
+> In node0, we can't use Kubectl get API endpoint. you need to copy to script to master node or a node which could access the API endpoint
+
+> PATH: the script will be located in node0(ng-kbz66woipi-ig-617ed-0) ~/yulu/Demo_ChatQnA/ChatQnA/kubernetes/manifests
+
+> HF_TOKEN : Be sure to input your HUGGINGFACEHUB_API_TOKEN in the "qna_configmap_gaudi.yaml"
 
 - all the enviornment set in the qna_configmap_gaudi.yaml
     
@@ -31,17 +37,73 @@
     tei-embedding-service-deploy        4/4     4            4           166m
     tgi-gaudi-service-deploy            29/32   32           29          112m
     ```
+## For Deploy 1 Node
+### 1. Node Label
+We use nodeSelector  to let all the pods choose correct nodes in kubernetes
+> [NOTE]  
+> Make sure the only one node has this label "demo=chatqna"
 
-### Install
+```
+kubectl label nodes ng-kbz66woipi-ig-617ed-0 demo=chatqna
+kubectl label --overwrite nodes ng-kbz66woipi-ig-617ed-1 demo-
+kubectl label --overwrite nodes ng-kbz66woipi-ig-617ed-2 demo-
+kubectl label --overwrite nodes ng-kbz66woipi-ig-617ed-3 demo-
+```
+
+### 2. Install
 
 - ./install_all_gaudi.sh
 
-### uninstall
+
+### 3. Scale tgi to 8 pods in 1 node
+- scale tgi —  `kubectl scale deploy tgi-gaudi-service-deploy --replicas=8`
+
+### 4. Verify
+
+- be sure you could access the service IP
+- user this command to check:
+- chaqna_backend_svc_ip=`kubectl get svc|grep '^chaqna-xeon-backend-server-svc'|awk '{print $3}'` && echo "\$\{chaqna_backend_svc_ip\}" && curl http://${chaqna_backend_svc_ip}:8888/v1/chatqna -H "Content-Type: application/json" -d '{
+     "messages": "What is the revenue of Nike in 2023?",
+     "max_tokens": 128
+     }'
+- or you could use "http://${hostip}:30888/v1/chatqna" instead
+
+### 5. Warmup
+- Due to using the fp8 model, before get benchmark data, you need to warmup each tgi instance first
+- `{ time python3 chatqna_benchmark.py --backend_url="http://${hostip}:30888/v1/chatqna" --concurrency=16;}`
+- wait for the command finish.
+
+### 6. Benchmark
+- edit test_benchmark.sh, replace the BACKEND_URL with http://${hostip}:30888/v1/chatqna
+- `./tes_benchmark.sh`
+- then you could see the result in benchmark.log
+
+
+### 7. Uninstall
 
 - ./remove_all_gaudi.sh
 
-### Scale
 
+
+## For Deploy 4 Nodes
+### 1. Node Label
+We use nodeSelector to let all the pods choose correct nodes in kubernetes
+> [NOTE]  
+> Make sure all the 4 nodes has this label "demo=chatqna"
+
+```
+kubectl label nodes ng-kbz66woipi-ig-617ed-0 demo=chatqna
+kubectl label nodes ng-kbz66woipi-ig-617ed-1 demo=chatqna
+kubectl label nodes ng-kbz66woipi-ig-617ed-2 demo=chatqna
+kubectl label nodes ng-kbz66woipi-ig-617ed-3 demo=chatqna
+```
+
+### 2. Install
+
+- ./install_all_gaudi.sh
+
+
+### 3. Scale tgi,tei,backend
 - As you scale the deployment, the pods will be evenly distributed across the nodes (1, 2, 3, and 4)
 - There are 8 Gaudi cards in each node. each tgi instance will consume one Gaudi card
 - there will be 32 tgi-gaudi, 4 tei-embedding, 4 chaqna-xeon-backend-server distributed evenly on 4 nodes
@@ -49,18 +111,40 @@
 - scale tei —  `kubectl scale deploy tei-embedding-service-deploy --replicas=4`
 - scale backend — `kubectl scale deploy chaqna-xeon-backend-server-deploy --replicas=4`
 
-## verify
+### 4. Verify(same as 1 node)
 
 - be sure you could access the service IP
-- user this command to check,
-- chaqna_backend_svc_ip=`kubectl get svc|grep '^chaqna-xeon-backend-server-svc'|awk '{print $3}'` && echo ${chaqna_backend_svc_ip} && curl http://${chaqna_backend_svc_ip}:8888/v1/chatqna -H "Content-Type: application/json" -d '{
+- user this command to check:
+- chaqna_backend_svc_ip=`kubectl get svc|grep '^chaqna-xeon-backend-server-svc'|awk '{print $3}'` && echo "\$\{chaqna_backend_svc_ip\}" && curl http://${chaqna_backend_svc_ip}:8888/v1/chatqna -H "Content-Type: application/json" -d '{
      "messages": "What is the revenue of Nike in 2023?",
      "max_tokens": 128
      }'
-- or you could use http://${hostip}:30888/v1/chatqna  instead
+- or you could use "http://${hostip}:30888/v1/chatqna" instead
 
-### how to change tei-embedding from xeon to gaudi
+### 5. Warmup
+- Due to using the fp8 model, before get benchmark data, you need to warmup each tgi instance first
+- There will be 32 tgi we need to warmup, and because k8s service can't loadbalance exactly. so we will have to use more concurrency to warmup
+- `{ time python3 chatqna_benchmark.py --backend_url="http://${hostip}:30888/v1/chatqna" --concurrency=64;}`
+- wait for the command finish.
+
+### 6. Benchmark(same as 1 node)
+- edit test_benchmark.sh, replace the BACKEND_URL with http://${hostip}:30888/v1/chatqna
+- `./tes_benchmark.sh`
+- then you could see the result in benchmark.log
+
+
+### 7. Uninstall
+
+- ./remove_all_gaudi.sh
+
+
+## How to change tei-embedding from xeon to gaudi
 
 - open the script: install_all_gaudi.sh
 - just replace the “tei_embedding_service” with “tei_embedding_gaudi_service”
 - if you need to config tei_embedding_gaudi, just edit the manifest file: tei_embedding_gaudi_service.yaml
+
+## How to modify parameters of tgi
+- open the tgi_gaudi_service.yaml
+- add or modify the parameters
+- we have already prepared a copy yaml of new params : "tgi_gaudi_service_new_params.yaml"
