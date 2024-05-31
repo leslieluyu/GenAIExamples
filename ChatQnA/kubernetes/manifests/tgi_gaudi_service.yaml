@@ -19,6 +19,15 @@ spec:
       labels:
         app: tgi-gaudi-service-deploy
     spec:
+      nodeSelector:
+        demo: "chatqna"
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+               matchLabels:
+                 app: tgi-gaudi-service-deploy
       hostIPC: true
       containers:
       - envFrom:
@@ -43,10 +52,10 @@ spec:
         args:
         - --model-id
         - $(LLM_MODEL_ID)
-        - --sharded 
-        - "true" 
-        - --num-shard 
-        - "4"
+          #- --sharded 
+          #- "true" 
+          #- --num-shard 
+          #- "4"
         - --max-input-length 
         - "1024"
         - --max-total-tokens 
@@ -60,7 +69,7 @@ spec:
         - containerPort: 80
         resources:
           limits:
-            habana.ai/gaudi: 4
+            habana.ai/gaudi: 1
               #memory: 409Gi
               #hugepages-2Mi: 95000Mi
       serviceAccountName: default
@@ -69,8 +78,8 @@ spec:
       - name: model-volume
         hostPath:
           # directory location on host
-          path: /home/sdp/mixstral_fp8_4_cards
-            #path: /mnt/models
+          #path: /home/sdp/mixstral_fp8_4_cards
+          path: /mnt/models
           # this field is optional
           type: Directory
       - name: shm

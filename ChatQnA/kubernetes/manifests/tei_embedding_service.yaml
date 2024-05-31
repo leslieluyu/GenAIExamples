@@ -19,6 +19,15 @@ spec:
       labels:
         app: tei-embedding-service-deploy
     spec:
+      nodeSelector:
+        demo: "chatqna"
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+               matchLabels:
+                 app: tei-embedding-service-deploy
       containers:
       - envFrom:
         - configMapRef:
