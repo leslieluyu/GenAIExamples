@@ -4,7 +4,7 @@
 > [NOTE]  
 > In node0, we can't use Kubectl get API endpoint. you need to copy to script to master node or a node which could access the API endpoint
 
-> PATH: the script will be located in node0(ng-kbz66woipi-ig-617ed-0) ~/yulu/Demo_ChatQnA/ChatQnA/kubernetes/manifests
+> PATH: the script will be located in node0(ng-kbz66woipi-ig-617ed-0) ~/Demo_ChatQnA/
 
 > HF_TOKEN : Be sure to input your HUGGINGFACEHUB_API_TOKEN in the "qna_configmap_gaudi.yaml"
 
@@ -60,7 +60,7 @@ kubectl label --overwrite nodes ng-kbz66woipi-ig-617ed-3 demo-
 
 ### 4. Verify
 
-- be sure you could access the service IP
+- Be sure you could access the service IP
 - user this command to check:
 - chaqna_backend_svc_ip=`kubectl get svc|grep '^chaqna-xeon-backend-server-svc'|awk '{print $3}'` && echo "\$\{chaqna_backend_svc_ip\}" && curl http://${chaqna_backend_svc_ip}:8888/v1/chatqna -H "Content-Type: application/json" -d '{
      "messages": "What is the revenue of Nike in 2023?",
