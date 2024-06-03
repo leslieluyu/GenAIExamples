@@ -47,7 +47,7 @@ def main(url, json_data, concurrency):
         for future in concurrent.futures.as_completed(future_to_url):
             _ = future_to_url[future]
 
-    print(f"Total Requests: {concurrency*2}")
+    print(f"Total Requests: {concurrency*1}")
 
     # Calculate the P50 (median)
     p50 = numpy.percentile(response_times, 50)
