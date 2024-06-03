@@ -29,6 +29,7 @@ spec:
                matchLabels:
                  app: tgi-gaudi-service-deploy
       hostIPC: true
+      runtimeClassName: habana
       containers:
       - envFrom:
         - configMapRef:
@@ -38,10 +39,8 @@ spec:
           value: "none"
         - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
           value: "true"
-        - name: runtime
-          value: "habana"
-        - name: HABANA_VISIBLE_DEVICES
-          value: "all"
+#        - name: HABANA_VISIBLE_DEVICES
+#          value: "all"
         - name: QUANT_CONFIG
           value: "/data/maxabs_quant.json"
         image: ghcr.io/huggingface/tgi-gaudi:2.0.0
@@ -73,7 +72,6 @@ spec:
               #memory: 409Gi
               #hugepages-2Mi: 95000Mi
       serviceAccountName: default
-      nodeSelector:
       volumes:
       - name: model-volume
         hostPath:
