@@ -1,11 +1,9 @@
-# How-To Deploy ChatQnA Demo in Kubernetes
+# How-To Deploy ChatQnA Demo in Kubernetes with Gaudi
 
 ### INFO:
 > [NOTE]  
-> In node0, we can't use Kubectl get API endpoint. you need to copy to script to master node or a node which could access the API endpoint
-
-> PATH: the script will be located in node0(ng-kbz66woipi-ig-617ed-0) ~/Demo_ChatQnA/
-
+> In node0, we can't use Kubectl get API endpoint. you need to copy to script to master node or a node which could access the API endpoint \
+> PATH: the script will be located in node0(ng-kbz66woipi-ig-617ed-0) ~/Demo_ChatQnA/ \
 > HF_TOKEN : Be sure to input your HUGGINGFACEHUB_API_TOKEN in the "qna_configmap_gaudi.yaml"
 
 - all the enviornment set in the qna_configmap_gaudi.yaml
@@ -14,9 +12,9 @@
     EMBEDDING_MODEL_ID: "BAAI/bge-base-en-v1.5"
     RERANK_MODEL_ID: "BAAI/bge-reranker-base"
     LLM_MODEL_ID: "mistralai/Mixtral-8x7B-v0.1"
-    TEI_EMBEDDING_ENDPOINT: "[http://tei-embedding-svc.default.svc.cluster.local:6006](http://tei-embedding-svc.default.svc.cluster.local:6006/)"
-    TEI_RERANKING_ENDPOINT: "[http://tei-reranking-svc.default.svc.cluster.local:8808](http://tei-reranking-svc.default.svc.cluster.local:8808/)"
-    TGI_LLM_ENDPOINT: "[http://tgi-gaudi-svc.default.svc.cluster.local:9009](http://tgi-gaudi-svc.default.svc.cluster.local:9009/)"
+    TEI_EMBEDDING_ENDPOINT: http://tei-embedding-svc.default.svc.cluster.local:6006
+    TEI_RERANKING_ENDPOINT: http://tei-reranking-svc.default.svc.cluster.local:8808
+    TGI_LLM_ENDPOINT: http://tgi-gaudi-svc.default.svc.cluster.local:9009
     REDIS_URL: "redis://redis-vector-db.default.svc.cluster.local:6379"
     INDEX_NAME: "rag-redis"
     HUGGING_FACE_HUB_TOKEN: "HUGGINGFACEHUB_API_TOKEN"
@@ -75,7 +73,7 @@ kubectl label --overwrite nodes ng-kbz66woipi-ig-617ed-3 demo-
 
 ### 6. Benchmark
 - edit test_benchmark.sh, replace the BACKEND_URL with http://${hostip}:30888/v1/chatqna
-- `./tes_benchmark.sh`
+- `./test_benchmark.sh`
 - then you could see the result in benchmark.log
 
 
@@ -129,7 +127,7 @@ kubectl label nodes ng-kbz66woipi-ig-617ed-3 demo=chatqna
 
 ### 6. Benchmark(same as 1 node)
 - edit test_benchmark.sh, replace the BACKEND_URL with http://${hostip}:30888/v1/chatqna
-- `./tes_benchmark.sh`
+- `./test_benchmark.sh`
 - then you could see the result in benchmark.log
 
 
@@ -148,3 +146,31 @@ kubectl label nodes ng-kbz66woipi-ig-617ed-3 demo=chatqna
 - open the tgi_gaudi_service.yaml
 - add or modify the parameters
 - we have already prepared a copy yaml of new params : "tgi_gaudi_service_new_params.yaml"
+
+
+
+## How to upload images from Docker into K8s
+> [NOTE] 
+
+> Before the "opea" docker hub repository was created, you need to prepare the images by yourself.\
+> You could use "load_save_images.sh" as example to batchly import images to kubernetes cluster.\
+> Make sure to import the images on each node of kubernetes.
+
+### Prerequisites:
+Docker images built already:
+- "opea/chatqna-ui:latest"
+- "opea/chatqna:latest"
+- "opea/tei-gaudi:latest"
+- "opea/llm-tgi:latest"
+- "opea/reranking-tei:latest"
+- "opea/retriever-redis:latest"
+- "opea/embedding-tei:latest"
+
+```
+# 1. Save docker images to tar
+docker save -o "$tar_file" "$image"
+
+# 2. upload images into k8s
+sudo nerdctl -n k8s.io load -i "$tar_file"
+
+```
