@@ -33,7 +33,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: qna-config
-        image: opea/retriever-redis:0.1
+        image: opea/retriever-redis:latest
         imagePullPolicy: IfNotPresent
         name: retriever-deploy
         args:
