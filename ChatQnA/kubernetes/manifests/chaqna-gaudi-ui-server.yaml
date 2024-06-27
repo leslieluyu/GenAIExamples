@@ -1,0 +1,56 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chaqna-gaudi-ui-server-deploy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chaqna-gaudi-ui-server-deploy
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: chaqna-gaudi-ui-server-deploy
+    spec:
+      nodeSelector:
+        demo: "chatqna"
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+               matchLabels:
+                 app: chaqna-gaudi-ui-server-deploy
+      hostIPC: true
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: qna-config
+        image: opea/chatqna-ui:latest
+        imagePullPolicy: IfNotPresent
+        name: chaqna-gaudi-ui-server-deploy
+        args:
+        ports:
+        - containerPort: 5173
+      serviceAccountName: default
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: chaqna-gaudi-ui-server-svc
+spec:
+  type: NodePort
+  selector:
+    app: chaqna-gaudi-ui-server-deploy
+  ports:
+    - name: service
+      port: 5173
+      targetPort: 5173
+      nodePort: 30173

@@ -1,0 +1,55 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dataprep-redis-service-deploy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dataprep-redis-service-deploy
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: dataprep-redis-service-deploy
+    spec:
+      nodeSelector:
+        demo: "chatqna"
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+               matchLabels:
+                 app: dataprep-redis-service-deploy
+      hostIPC: true
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: qna-config
+        image: opea/dataprep-redis:latest
+        imagePullPolicy: IfNotPresent
+        name: dataprep-redis-service-deploy
+        args:
+        ports:
+        - containerPort: 6007
+      serviceAccountName: default
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dataprep-redis-service-svc
+spec:
+  type: NodePort
+  selector:
+    app: dataprep-redis-service-deploy
+  ports:
+    - name: service
+      port: 6007
+      targetPort: 6007
