@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Array of YAML file names
-yaml_files=("qna_configmap_xeon" "redis-vector-db"  "tei_embedding_service" "tei_reranking_service" "tgi_service" "retriever" "embedding" "reranking" "llm" "chaqna-xeon-backend-server")
+yaml_files=("qna_configmap_xeon" "redis-vector-db"  "tei_embedding_service" "tei_reranking_service" "tgi_service" "retriever" "embedding" "reranking" "llm" "chaqna-xeon-backend-server" "dataprep-redis-service" "chaqna-gaudi-ui-server")
 for element in ${yaml_files[@]}
 do
     echo "Delete manifest from ${element}.yaml"
