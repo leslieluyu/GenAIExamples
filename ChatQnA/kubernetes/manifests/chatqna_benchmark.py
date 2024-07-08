@@ -15,12 +15,12 @@ response_times = []
 
 def extract_qText(json_data):
     try:
-        file = open("data.json")
-        data = json.load(file)
+        #file = open("data.json")
+        #data = json.load(file)
         post_json_data = {}
-        #post_json_data["model"] = "Intel/neural-chat-7b-v3-3"
+        post_json_data["model"] = "Intel/neural-chat-7b-v3-3"
         #post_json_data["messages"] = data[random.randint(0, len(data) - 1)]["qText"]
-        post_json_data["messages"] = "What is the revenue of Nike in 2023?"
+        post_json_data["messages"] = "What is the revenue of Nike in last 10 years before 2023? Give me detail"
         post_json_data["max_tokens"] = 128
         return json.dumps(post_json_data)
     except (json.JSONDecodeError, KeyError, IndexError):
