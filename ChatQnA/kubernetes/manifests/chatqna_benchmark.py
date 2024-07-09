@@ -11,6 +11,8 @@ import numpy
 import requests
 
 response_times = []
+total_requests = 0
+successful_requests = 0
 
 
 def extract_qText(json_data):
@@ -29,13 +31,32 @@ def extract_qText(json_data):
 
 def send_request(url, json_data):
     global response_times
+    global total_requests
+    global successful_requests
     print(f"Sending request to {url} with data {json_data}")
     start_time = time.time()
     headers = {"Content-Type": "application/json"}
     response = requests.post(url, data=json_data, headers=headers)
     end_time = time.time()
-    response_times.append(end_time - start_time)
-    print(f"Question: {json_data} Response: {response.status_code} - {response.text}")
+    #response_times.append(end_time - start_time)
+    
+    print(f"response.status_code= {response.status_code}")
+    if response.status_code == 200:
+        successful_requests += 1
+        print(f"response.status_code is 200")
+        response_times.append(end_time - start_time)
+    else:
+        print(f"response.status_code is not 200")
+
+    total_requests += 1
+    # if response.status_code == 200:
+    #     successful_requests += 1
+    #     response_time = end_time - start_time
+    #     #response_times.append(end_time - start_time)
+    #     print(f"Question: {json_data} Response: {response.status_code} - {response.text}")
+    # else:
+    #     print(f"Question: {json_data} Response: {response.status_code} - Request failed")
+    # print(f"Question: {json_data} Response: {response.status_code} - {response.text}")
 
 
 def main(url, json_data, concurrency):
@@ -57,6 +78,14 @@ def main(url, json_data, concurrency):
     p99 = numpy.percentile(response_times, 99)
     print("P99 latency is ", p99, "s")
 
+    print(f"Total requests: {total_requests}")
+    print(f"Successful requests: {successful_requests}")
+    if total_requests > 0:
+        success_rate = (successful_requests / total_requests) * 100
+        print(f"Success rate: {success_rate:.2f}%")
+    else:
+       	print(f"Success rate: is 0, total_requests is 0")
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Concurrent client to send POST requests")
