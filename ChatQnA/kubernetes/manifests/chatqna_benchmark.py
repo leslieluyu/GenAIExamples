@@ -43,11 +43,9 @@ def send_request(url, json_data):
     print(f"response.status_code= {response.status_code}")
     if response.status_code == 200:
         successful_requests += 1
-        print(f"response.status_code is 200")
+        # print(f"response.status_code is 200")
         response_times.append(end_time - start_time)
-    else:
-        print(f"response.status_code is not 200")
-
+    
     total_requests += 1
     # if response.status_code == 200:
     #     successful_requests += 1
@@ -56,7 +54,7 @@ def send_request(url, json_data):
     #     print(f"Question: {json_data} Response: {response.status_code} - {response.text}")
     # else:
     #     print(f"Question: {json_data} Response: {response.status_code} - Request failed")
-    # print(f"Question: {json_data} Response: {response.status_code} - {response.text}")
+    print(f"Question: {json_data} Response: {response.status_code} - {response.text}")
 
 
 def main(url, json_data, concurrency):
@@ -69,7 +67,10 @@ def main(url, json_data, concurrency):
             _ = future_to_url[future]
 
     print(f"Total Requests: {concurrency*1}")
-
+    
+    if not response_times:
+        print(f"response_times is empty or falsy")
+        return
     # Calculate the P50 (median)
     p50 = numpy.percentile(response_times, 50)
     print("P50 latency is ", p50, "s")
