@@ -6,7 +6,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tgi-gaudi-service-deploy
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -29,35 +28,18 @@ spec:
                matchLabels:
                  app: tgi-gaudi-service-deploy
       hostIPC: true
-      runtimeClassName: habana
       containers:
       - envFrom:
         - configMapRef:
             name: qna-config
-        env:
-        - name: OMPI_MCA_btl_vader_single_copy_mechanism
-          value: "none"
-        - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
-          value: "true"
-#        - name: HABANA_VISIBLE_DEVICES
-#          value: "all"
-        - name: QUANT_CONFIG
-          value: "/data/maxabs_quant.json"
-        image: ghcr.io/huggingface/tgi-gaudi:2.0.0
+        image: tgi-gaudi:driver_1.16.1
         name: tgi-gaudi-service-deploy-demo
-        securityContext:
-          capabilities:
-            add: ["SYS_NICE"]
         args:
         - --model-id
         - $(LLM_MODEL_ID)
-          #- --sharded 
-          #- "true" 
-          #- --num-shard 
-          #- "4"
-        - --max-input-length 
+        - --max-input-length
         - "1024"
-        - --max-total-tokens 
+        - --max-total-tokens
         - "2048"
         volumeMounts:
         - mountPath: /data
@@ -69,14 +51,11 @@ spec:
         resources:
           limits:
             habana.ai/gaudi: 1
-              #memory: 409Gi
-              #hugepages-2Mi: 95000Mi
       serviceAccountName: default
       volumes:
       - name: model-volume
         hostPath:
           # directory location on host
-          #path: /home/sdp/mixstral_fp8_4_cards
           path: /mnt/models
           # this field is optional
           type: Directory
@@ -89,11 +68,13 @@ kind: Service
 apiVersion: v1
 metadata:
   name: tgi-gaudi-svc
+  labels:
+     app: tgi-gaudi-service-deploy
 spec:
   type: ClusterIP
   selector:
     app: tgi-gaudi-service-deploy
   ports:
-    - name: service
+    - name: tgi-gaudi-svc
       port: 9009
       targetPort: 80

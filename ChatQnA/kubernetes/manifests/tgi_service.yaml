@@ -58,7 +58,6 @@ spec:
           #   cpu: 56000m
           #   memory: 26Gi
       serviceAccountName: default
-      nodeSelector:
       volumes:
       - name: model-volume
         hostPath:
