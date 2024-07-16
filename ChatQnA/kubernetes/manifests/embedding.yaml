@@ -45,11 +45,13 @@ kind: Service
 apiVersion: v1
 metadata:
   name: embedding-svc
+  labels:
+    app: embedding-deploy
 spec:
   type: ClusterIP
   selector:
     app: embedding-deploy
   ports:
-    - name: service
+    - name: embedding-svc
       port: 6000
       targetPort: 6000

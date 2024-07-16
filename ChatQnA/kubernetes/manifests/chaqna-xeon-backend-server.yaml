@@ -45,12 +45,14 @@ kind: Service
 apiVersion: v1
 metadata:
   name: chaqna-xeon-backend-server-svc
+  labels: 
+    app: chaqna-xeon-backend-server-deploy
 spec:
   type: NodePort
   selector:
     app: chaqna-xeon-backend-server-deploy
   ports:
-    - name: service
+    - name: chaqna-xeon-backend-server-svc
       port: 8888
       targetPort: 8888
       nodePort: 30888

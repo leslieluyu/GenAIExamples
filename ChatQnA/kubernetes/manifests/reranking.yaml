@@ -45,11 +45,13 @@ kind: Service
 apiVersion: v1
 metadata:
   name: reranking-svc
+  labels:
+    app: reranking-deploy
 spec:
   type: ClusterIP
   selector:
     app: reranking-deploy
   ports:
-    - name: service
+    - name: reranking-svc
       port: 8000
       targetPort: 8000

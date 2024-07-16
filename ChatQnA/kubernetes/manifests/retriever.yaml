@@ -45,11 +45,13 @@ kind: Service
 apiVersion: v1
 metadata:
   name: retriever-svc
+  labels:
+    app: retriever-deploy
 spec:
   type: ClusterIP
   selector:
     app: retriever-deploy
   ports:
-    - name: service
+    - name: retriever-svc
       port: 7000
       targetPort: 7000

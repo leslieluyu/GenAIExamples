@@ -18,30 +18,16 @@ spec:
       labels:
         app: tgi-gaudi-service-deploy
     spec:
-      nodeSelector:
-        demo: "chatqna"
-      topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: ScheduleAnyway
-        labelSelector:
-               matchLabels:
-                 app: tgi-gaudi-service-deploy
       hostIPC: true
       containers:
       - envFrom:
         - configMapRef:
             name: qna-config
-              #image: tgi-gaudi:driver_1.16.1
-        image: ghcr.io/huggingface/tgi-gaudi:2.0.2
+        image: tgi-gaudi:driver_1.16.1
         name: tgi-gaudi-service-deploy-demo
         args:
         - --model-id
         - $(LLM_MODEL_ID)
-        - --max-input-length
-        - "1024"
-        - --max-total-tokens
-        - "2048"
         volumeMounts:
         - mountPath: /data
           name: model-volume
@@ -53,6 +39,7 @@ spec:
           limits:
             habana.ai/gaudi: 1
       serviceAccountName: default
+      nodeSelector:
       volumes:
       - name: model-volume
         hostPath:
@@ -69,13 +56,11 @@ kind: Service
 apiVersion: v1
 metadata:
   name: tgi-gaudi-svc
-  labels:
-     app: tgi-gaudi-service-deploy
 spec:
   type: ClusterIP
   selector:
     app: tgi-gaudi-service-deploy
   ports:
-    - name: tgi-gaudi-svc
+    - name: service
       port: 9009
       targetPort: 80

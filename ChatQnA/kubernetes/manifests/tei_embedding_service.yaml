@@ -68,11 +68,13 @@ kind: Service
 apiVersion: v1
 metadata:
   name: tei-embedding-svc
+  labels:
+    app: tei-embedding-service-deploy
 spec:
   type: ClusterIP
   selector:
     app: tei-embedding-service-deploy
   ports:
-    - name: service
+    - name: tei-embedding-svc
       port: 6006
       targetPort: 80

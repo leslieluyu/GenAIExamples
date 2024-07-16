@@ -45,11 +45,13 @@ kind: Service
 apiVersion: v1
 metadata:
   name: llm-svc
+  labels:
+    app: llm-deploy
 spec:
   type: ClusterIP
   selector:
     app: llm-deploy
   ports:
-    - name: service
+    - name: llm-svc
       port: 9000
       targetPort: 9000

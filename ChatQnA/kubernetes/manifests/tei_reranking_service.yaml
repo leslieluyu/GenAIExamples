@@ -68,11 +68,13 @@ kind: Service
 apiVersion: v1
 metadata:
   name: tei-reranking-svc
+  labels:
+    app: tei-reranking-service-deploy
 spec:
   type: ClusterIP
   selector:
     app: tei-reranking-service-deploy
   ports:
-    - name: service
+    - name: tei-reranking-svc
       port: 8808
       targetPort: 80
