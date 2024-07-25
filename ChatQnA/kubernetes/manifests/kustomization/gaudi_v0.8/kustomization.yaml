@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: bench-v08
+
+resources:
+- ../base 
+images:
+- name: embedding-image
+  newName: opea/embedding-tei
+  newTag: v0.8
+- name: retriever-image
+  newName: opea/retriever-redis
+  newTag: v0.8
+- name: reranking-image
+  newName: opea/reranking-tei
+  newTag: v0.8
+- name: llm-image
+  newName: opea/llm-tgi
+  newTag: v0.8
+- name: chatqna-image
+  newName: opea/chatqna
+  newTag: v0.8
+- name: dataprep-image
+  newName: opea/dataprep-redis
+  newTag: v0.8

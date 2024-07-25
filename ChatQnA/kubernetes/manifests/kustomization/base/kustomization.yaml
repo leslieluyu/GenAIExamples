@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+  #namespace: bench-v08
+
+resources:
+- namespace.yaml
+- chaqna-gaudi-ui-server.yaml
+- chaqna-xeon-backend-server.yaml
+- dataprep-redis-service.yaml
+- embedding.yaml
+- llm.yaml
+- qna_configmap_gaudi.yaml
+# - qna_configmap_xeon.yaml
+- redis-vector-db.yaml
+- reranking.yaml
+- retriever.yaml
+- tei_embedding_service.yaml
+- tei_reranking_service.yaml
+- tgi_gaudi_service.yaml
+# Add other resource files as needed
+

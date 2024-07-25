@@ -1,0 +1,57 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reranking-deploy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reranking-deploy
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: reranking-deploy
+    spec:
+      nodeSelector:
+        demo: "chatqna"
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+               matchLabels:
+                 app: reranking-deploy
+      hostIPC: true
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: qna-config
+        image: reranking-image
+        imagePullPolicy: IfNotPresent
+        name: reranking-deploy
+        args:
+        ports:
+        - containerPort: 8000
+      serviceAccountName: default
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: reranking-svc
+  labels:
+    app: reranking-deploy
+spec:
+  type: ClusterIP
+  selector:
+    app: reranking-deploy
+  ports:
+    - name: reranking-svc
+      port: 8000
+      targetPort: 8000

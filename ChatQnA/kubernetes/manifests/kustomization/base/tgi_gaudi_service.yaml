@@ -1,0 +1,82 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tgi-gaudi-service-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tgi-gaudi-service-deploy
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: tgi-gaudi-service-deploy
+    spec:
+      nodeSelector:
+        demo: "chatqna"
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+               matchLabels:
+                 app: tgi-gaudi-service-deploy
+      hostIPC: true
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: qna-config
+              #image: tgi-gaudi:driver_1.16.1
+        #image: ghcr.io/huggingface/tgi-gaudi:2.0.2
+        image: ghcr.io/huggingface/tgi-gaudi:2.0.1
+        name: tgi-gaudi-service-deploy-demo
+        args:
+        - --model-id
+        - $(LLM_MODEL_ID)
+        - --max-input-length
+        - "1024"
+        - --max-total-tokens
+        - "2048"
+        volumeMounts:
+        - mountPath: /data
+          name: model-volume
+        - mountPath: /dev/shm
+          name: shm
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            habana.ai/gaudi: 1
+      serviceAccountName: default
+      volumes:
+      - name: model-volume
+        hostPath:
+          # directory location on host
+          path: /mnt/models
+          # this field is optional
+          type: Directory
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 1Gi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: tgi-gaudi-svc
+  labels:
+     app: tgi-gaudi-service-deploy
+spec:
+  type: ClusterIP
+  selector:
+    app: tgi-gaudi-service-deploy
+  ports:
+    - name: tgi-gaudi-svc
+      port: 9009
+      targetPort: 80
