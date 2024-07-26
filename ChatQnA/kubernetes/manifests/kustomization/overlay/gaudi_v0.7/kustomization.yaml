@@ -1,13 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: bench-v07
+namespace: benchmarking
 
 # bases:
 # - ../base
 
 resources:
-- ../base
+- ../../base
+- ../../base_gaudi
 # - redis-vector-db.yaml
 # Add other resource files as needed
 
@@ -17,7 +18,7 @@ images:
     newTag: latest
   - name: retriever-image
     newName: opea/retriever-redis
-    newTag: latest
+    newTag: v0.7
   - name: reranking-image
     newName: opea/reranking-tei
     newTag: latest

@@ -33,7 +33,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: qna-config
-        image: dataprep-image
+        image: opea/dataprep-redis:latest
         imagePullPolicy: IfNotPresent
         name: dataprep-redis-service-deploy
         args:

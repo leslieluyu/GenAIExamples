@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: benchmarking
+
+# bases:
+# - ../base
+
+resources:
+- ../../base
+- ../../base_xeon
+
+# - redis-vector-db.yaml
+# Add other resource files as needed
+
+images:
+  - name: opea/embedding-tei:latest
+    newName: opea/embedding-tei
+    newTag: v0.8
+  - name: opea/retriever-redis:latest
+    newName: opea/retriever-redis
+    newTag: v0.8
+  - name: opea/reranking-tei:latest
+    newName: opea/reranking-tei
+    newTag: v0.8
+  - name: opea/llm-tgi:latest
+    newName: opea/llm-tgi
+    newTag: v0.8
+  - name: opea/chatqna:latest
+    newName: opea/chatqna
+    newTag: v0.8
+  - name: opea/dataprep-redis:latest
+    newName: opea/dataprep-redis
+    newTag: v0.8
