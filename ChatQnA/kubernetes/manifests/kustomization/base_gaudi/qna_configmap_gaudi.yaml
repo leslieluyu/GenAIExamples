@@ -23,13 +23,15 @@ data:
   REDIS_HOST: redis-vector-db
   REDIS_PORT: "6379"
   INDEX_NAME: "rag-redis"
-  CHAT_BASE_URL: "http://192.168.1.3:30888/v1/chatqna"
-  UPLOAD_FILE_BASE_URL: "http://dataprep-redis-service-svc:6007/v1/dataprep"
+  CHAT_BASE_URL: "http://10.238.153.59:30988/v1/chatqna"   #"http://100.83.122.244:30988/v1/chatqna"
+  UPLOAD_FILE_BASE_URL: "http://10.238.153.59:30452/v1/dataprep" #"http://dataprep-redis-service-svc:6007/v1/dataprep"
   HUGGING_FACE_HUB_TOKEN: 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
   HUGGINGFACEHUB_API_TOKEN: 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
   EMBEDDING_SERVICE_HOST_IP: embedding-svc
   RETRIEVER_SERVICE_HOST_IP: retriever-svc
   RERANK_SERVICE_HOST_IP: reranking-svc
   LLM_SERVICE_HOST_IP: llm-svc
+  BACKEND_SERVICE_ENDPOINT: "http://10.238.153.59:30988/v1/chatqna"
+  DATAPREP_SERVICE_ENDPOINT: "http://10.238.153.59:30452/v1/dataprep"
     #PT_HPU_ENABLE_LAZY_COLLECTIVES: "true"
     #OMPI_MCA_btl_vader_single_copy_mechanism: "none"

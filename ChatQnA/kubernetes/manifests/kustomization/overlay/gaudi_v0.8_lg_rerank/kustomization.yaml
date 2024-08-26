@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: benchmarking
+
+resources:
+- ../../base
+- ../../base_gaudi
+patchesStrategicMerge:
+  - tei_reranking_service.yaml
+images:
+- name: opea/embedding-tei:latest
+  newName: grangli/embedding-tei
+  newTag: v0.8
+- name: opea/retriever-redis:latest
+  newName: grangli/retriever-redis
+  newTag: v0.8
+- name: opea/reranking-tei:latest
+  newName: grangli/reranking-tei
+  newTag: v0.8
+- name: opea/llm-tgi:latest
+  newName: grangli/llm-tgi
+  newTag: v0.8
+- name: opea/chatqna:latest
+  newName: grangli/chatqna
+  newTag: v0.81
+- name: opea/dataprep-redis:latest
+  newName: grangli/dataprep-redis
+  newTag: v0.8
+- name: ghcr.io/huggingface/text-embeddings-inference:cpu-1.2
+  newName: ghcr.io/huggingface/text-embeddings-inference
+  newTag: cpu-1.5

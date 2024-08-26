@@ -5,19 +5,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tei-embedding-service-deploy
+  name: tei-reranking-service-deploy
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tei-embedding-service-deploy
+      app: tei-reranking-service-deploy
   template:
     metadata:
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
       labels:
-        app: tei-embedding-service-deploy
+        app: tei-reranking-service-deploy
     spec:
       nodeSelector:
         demo: "chatqna"
@@ -27,16 +27,16 @@ spec:
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
                matchLabels:
-                 app: tei-embedding-service-deploy
+                 app: tei-reranking-service-deploy
       containers:
       - envFrom:
         - configMapRef:
             name: qna-config
         image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.2
-        name: tei-embedding-service-deploy
+        name: tei-reranking-service-deploy
         args:
         - --model-id
-        - $(EMBEDDING_MODEL_ID)
+        - $(RERANK_MODEL_ID)
         - --auto-truncate
         volumeMounts:
         - mountPath: /data
@@ -52,6 +52,13 @@ spec:
         #   requests:
         #     cpu: 56000m
         #     memory: 26Gi
+        resources:
+          limits:
+            cpu: 76000m
+            memory: 20Gi            
+          requests:
+            cpu: 76000m
+            memory: 20Gi
       serviceAccountName: default
       volumes:
       - name: model-volume
@@ -68,14 +75,14 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: tei-embedding-svc
+  name: tei-reranking-svc
   labels:
-    app: tei-embedding-service-deploy
+    app: tei-reranking-service-deploy
 spec:
   type: ClusterIP
   selector:
-    app: tei-embedding-service-deploy
+    app: tei-reranking-service-deploy
   ports:
-    - name: tei-embedding-svc
-      port: 6006
+    - name: tei-reranking-svc
+      port: 8808
       targetPort: 80

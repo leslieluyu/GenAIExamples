@@ -52,6 +52,13 @@ spec:
         #   requests:
         #     cpu: 56000m
         #     memory: 26Gi
+        resources:
+          limits:
+            cpu: 28000m
+            memory: 20Gi
+          requests:
+            cpu: 28000m
+            memory: 20Gi
       serviceAccountName: default
       volumes:
       - name: model-volume

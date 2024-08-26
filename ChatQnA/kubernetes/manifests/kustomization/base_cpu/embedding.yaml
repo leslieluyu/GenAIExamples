@@ -5,19 +5,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dataprep-redis-service-deploy
+  name: embedding-deploy
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dataprep-redis-service-deploy
+      app: embedding-deploy
   template:
     metadata:
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
       labels:
-        app: dataprep-redis-service-deploy
+        app: embedding-deploy
     spec:
       nodeSelector:
         demo: "chatqna"
@@ -27,30 +27,38 @@ spec:
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
                matchLabels:
-                 app: dataprep-redis-service-deploy
+                 app: embedding-deploy
       hostIPC: true
       containers:
       - envFrom:
         - configMapRef:
             name: qna-config
-        image: opea/dataprep-redis:latest
+        image: opea/embedding-tei:latest
         imagePullPolicy: IfNotPresent
-        name: dataprep-redis-service-deploy
+        name: embedding-deploy
         args:
         ports:
-        - containerPort: 6007
+        - containerPort: 6000
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 1Gi
+          requests:
+            cpu: 4000m
+            memory: 1Gi
       serviceAccountName: default
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: dataprep-redis-service-svc
+  name: embedding-svc
+  labels:
+    app: embedding-deploy
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
-    app: dataprep-redis-service-deploy
+    app: embedding-deploy
   ports:
-    - name: service
-      port: 6007
-      targetPort: 6007
-      nodePort: 30452
+    - name: embedding-svc
+      port: 6000
+      targetPort: 6000

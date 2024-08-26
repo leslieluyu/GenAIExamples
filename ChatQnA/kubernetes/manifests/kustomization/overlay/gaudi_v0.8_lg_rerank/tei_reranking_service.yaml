@@ -5,19 +5,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tei-embedding-service-deploy
+  name: tei-reranking-service-deploy
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tei-embedding-service-deploy
+      app: tei-reranking-service-deploy
   template:
     metadata:
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
       labels:
-        app: tei-embedding-service-deploy
+        app: tei-reranking-service-deploy
     spec:
       nodeSelector:
         demo: "chatqna"
@@ -27,16 +27,23 @@ spec:
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
                matchLabels:
-                 app: tei-embedding-service-deploy
+                 app: tei-reranking-service-deploy
       containers:
       - envFrom:
         - configMapRef:
             name: qna-config
-        image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.2
-        name: tei-embedding-service-deploy
+        env:
+        - name: OMPI_MCA_btl_vader_single_copy_mechanism
+          value: none
+        - name: PT_HPU_ENABLE_LAZY_COLLECTIVES
+          value: 'true' 
+        - name: MAX_WARMUP_SEQUENCE_LENGTH
+          value: '512'
+        image: grangli/tei_gaudi:0730
+        name: tei-reranking-service-deploy
         args:
         - --model-id
-        - $(EMBEDDING_MODEL_ID)
+        - $(RERANK_MODEL_ID)
         - --auto-truncate
         volumeMounts:
         - mountPath: /data
@@ -45,6 +52,9 @@ spec:
           name: shm
         ports:
         - containerPort: 80
+        resources:
+          limits:
+            habana.ai/gaudi: 1
         # resources:
         #   limits:
         #     cpu: 56000m
@@ -68,14 +78,14 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: tei-embedding-svc
+  name: tei-reranking-svc
   labels:
-    app: tei-embedding-service-deploy
+    app: tei-reranking-service-deploy
 spec:
   type: ClusterIP
   selector:
-    app: tei-embedding-service-deploy
+    app: tei-reranking-service-deploy
   ports:
-    - name: tei-embedding-svc
-      port: 6006
+    - name: tei-reranking-svc
+      port: 8808
       targetPort: 80

@@ -5,19 +5,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dataprep-redis-service-deploy
+  name: llm-deploy
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dataprep-redis-service-deploy
+      app: llm-deploy
   template:
     metadata:
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
       labels:
-        app: dataprep-redis-service-deploy
+        app: llm-deploy
     spec:
       nodeSelector:
         demo: "chatqna"
@@ -27,30 +27,38 @@ spec:
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
                matchLabels:
-                 app: dataprep-redis-service-deploy
+                 app: llm-deploy
       hostIPC: true
       containers:
       - envFrom:
         - configMapRef:
             name: qna-config
-        image: opea/dataprep-redis:latest
+        image: opea/llm-tgi:latest
         imagePullPolicy: IfNotPresent
-        name: dataprep-redis-service-deploy
+        name: llm-deploy
         args:
         ports:
-        - containerPort: 6007
+        - containerPort: 9000
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 1Gi
+          requests:
+            cpu: 4000m
+            memory: 1Gi
       serviceAccountName: default
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: dataprep-redis-service-svc
+  name: llm-svc
+  labels:
+    app: llm-deploy
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
-    app: dataprep-redis-service-deploy
+    app: llm-deploy
   ports:
-    - name: service
-      port: 6007
-      targetPort: 6007
-      nodePort: 30452
+    - name: llm-svc
+      port: 9000
+      targetPort: 9000

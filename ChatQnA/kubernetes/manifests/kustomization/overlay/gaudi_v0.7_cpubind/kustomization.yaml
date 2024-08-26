@@ -3,15 +3,9 @@ kind: Kustomization
 
 namespace: benchmarking
 
-# bases:
-# - ../base
-
 resources:
-- ../../base
+- ../../base_cpu
 - ../../base_gaudi
-# - redis-vector-db.yaml
-# Add other resource files as needed
-
 images:
   - name: opea/embedding-tei:latest
     newName: opea/embedding-tei

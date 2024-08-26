@@ -3,22 +3,16 @@ kind: Kustomization
 
 namespace: benchmarking
 
-# bases:
-# - ../base
-
 resources:
-- ../../base
+- ../../base_cpu
 - ../../base_gaudi
-# - redis-vector-db.yaml
-# Add other resource files as needed
-
 images:
   - name: opea/embedding-tei:latest
     newName: opea/embedding-tei
     newTag: v0.7
   - name: opea/retriever-redis:latest
     newName: opea/retriever-redis
-    newTag: v0.7
+    newTag: v0.7-norerank
   - name: opea/reranking-tei:latest
     newName: opea/reranking-tei
     newTag: v0.7
@@ -27,7 +21,7 @@ images:
     newTag: v0.7
   - name: opea/chatqna:latest
     newName: opea/chatqna
-    newTag: v0.7
+    newTag: v0.7-norank
   - name: opea/dataprep-redis:latest
     newName: opea/dataprep-redis
     newTag: v0.7

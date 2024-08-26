@@ -5,19 +5,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dataprep-redis-service-deploy
+  name: chaqna-gaudi-ui-server-deploy
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dataprep-redis-service-deploy
+      app: chaqna-gaudi-ui-server-deploy
   template:
     metadata:
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
       labels:
-        app: dataprep-redis-service-deploy
+        app: chaqna-gaudi-ui-server-deploy
     spec:
       nodeSelector:
         demo: "chatqna"
@@ -27,30 +27,30 @@ spec:
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
                matchLabels:
-                 app: dataprep-redis-service-deploy
+                 app: chaqna-gaudi-ui-server-deploy
       hostIPC: true
       containers:
       - envFrom:
         - configMapRef:
             name: qna-config
-        image: opea/dataprep-redis:latest
+        image: opea/chatqna-conversation-ui:latest #opea/chatqna-ui:latest
         imagePullPolicy: IfNotPresent
-        name: dataprep-redis-service-deploy
+        name: chaqna-gaudi-ui-server-deploy
         args:
         ports:
-        - containerPort: 6007
+        - containerPort: 5173
       serviceAccountName: default
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: dataprep-redis-service-svc
+  name: chaqna-gaudi-ui-server-svc
 spec:
   type: NodePort
   selector:
-    app: dataprep-redis-service-deploy
+    app: chaqna-gaudi-ui-server-deploy
   ports:
     - name: service
-      port: 6007
-      targetPort: 6007
-      nodePort: 30452
+      port: 5173
+      targetPort: 80
+      nodePort: 30173
